@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Standardization App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+            max-width: 650px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #d9534f; /* Alert red */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 200px;
+            font-family: monospace;
+            background: #eef; /* Light blue for code */
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:nth-of-type(1) {
+            background-color: #ff6b6b; /* Red for validate */
+            color: white;
+        }
+
+        button:nth-of-type(2) {
+            background-color: #007BFF; /* Blue for download */
+            color: white;
+        }
+
+        .report-btn {
+            background-color: #333; /* Dark button for navigation */
+            color: white;
+        }
+
+        .report-btn:hover {
+            background-color: #111;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>XML Standardization Tool</h2>
+
+    <!-- File Upload -->
+    <label for="fileInput">Upload XML or JSON File:</label>
+    <input type="file" id="fileInput" accept=".xml, .json" onchange="processFile()">
+
+    <!-- XML Preview Editor -->
+    <label for="xmlEditor">XML Preview (Editable):</label>
+    <textarea id="xmlEditor" placeholder="Your XML content will appear here after upload..."></textarea>
+
+    <!-- Schema Selection -->
+    <label for="schema">Select Schema:</label>
+    <select id="schema">
+        <option value="schema1">Schema 1</option>
+        <option value="schema2">Schema 2</option>
+        <option value="schema3">Schema 3</option>
+    </select>
+
+    <!-- Validate & Format Button -->
+    <button onclick="validateXML()">Validate & Format</button>
+
+    <!-- Download Button -->
+    <button onclick="downloadXML()">Download Standardized XML</button>
+
+    <!-- Back to Main UI Button-->
+     <button class = "report-btn" onclick="navigateTo('MainUI.html')">Go back to MainUI</button>
+
+     <!-- Goes next to XMLStandardization.html-->
+     <button class = "report-btn" onclick="navigateTo('XMLStandardization.html')">Go to Power Outage Report Generation</button>
+</div>
+
+<script>
+    // Function to handle file upload and detect JSON or XML
+    function processFile() {
+        let fileInput = document.getElementById("fileInput");
+        let file = fileInput.files[0];
+        let reader = new FileReader();
+        
+        reader.onload = function(event) {
+            let content = event.target.result;
+            if (file.name.endsWith(".json")) {
+                // Convert JSON to XML
+                let jsonObj = JSON.parse(content);
+                let xmlContent = jsonToXml(jsonObj);
+                document.getElementById("xmlEditor").value = xmlContent;
+            } else {
+                // Assume it's XML
+                document.getElementById("xmlEditor").value = content;
+            }
+        };
+
+        if (file) {
+            reader.readAsText(file);
+        }
+    }
+
+    // Function to convert JSON to XML format
+    function jsonToXml(json, root = "root") {
+        let xml = `<${root}>`;
+        for (let key in json) {
+            if (typeof json[key] === "object") {
+                xml += jsonToXml(json[key], key);
+            } else {
+                xml += `<${key}>${json[key]}</${key}>`;
+            }
+        }
+        xml += `</${root}>`;
+        return xml;
+    }
+
+    // Function to simulate XML validation & formatting
+    function validateXML() {
+        let xmlEditor = document.getElementById("xmlEditor");
+        let formattedXML = xmlEditor.value.trim(); // Simulated formatting
+        xmlEditor.value = formattedXML; // Update textarea with "formatted" XML
+        alert("XML validated and formatted!");
+    }
+
+    // Function to download the processed XML
+    function downloadXML() {
+        let text = document.getElementById("xmlEditor").value;
+        let blob = new Blob([text], { type: "application/xml" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "standardized.xml";
+        link.click();
+    }
+
+    function navigateTo(url){
+        window.location.href= url
+    }
+</script>
+
+</body>
+</html>
