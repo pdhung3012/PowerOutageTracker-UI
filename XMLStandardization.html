@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>XML Standardization App</title>
+  <title>POTracker Standardization</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      max-width: 700px;
+      max-width: 900px;
       margin: auto;
     }
 
@@ -37,6 +37,7 @@
 
     input, select {
       width: 100%;
+      box-sizing: border-box;
       margin-bottom: 15px;
       padding: 10px;
       border: 1px solid #ccc;
@@ -44,37 +45,54 @@
       font-size: 15px;
     }
 
+    .editor-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .editor-pane {
+      flex: 1;
+      min-width: 300px;
+    }
+    
     .editor-wrapper {
       display: flex;
       border: 1px solid #ccc;
       border-radius: 5px;
       overflow: hidden;
       margin-bottom: 15px;
+      height: 250px;
     }
 
-    #lineNumbers {
+    .line-numbers {
       width: 40px;
       background: #eee;
       color: #666;
       text-align: right;
       border: none;
-      padding-top: 10px;
+      padding: 10px 5px 10px 0;
       resize: none;
       font-family: monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-y: hidden;
     }
 
-    #xmlEditor {
+    .xml-editor {
       width: 100%;
       padding: 10px;
       border: none;
-      resize: vertical;
-      background: #eef;
+      resize: none;
+      background: #fdfdff;
       font-family: monospace;
-      height: 200px;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     button {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px;
       margin-top: 10px;
       margin-bottom: 10px;
@@ -86,12 +104,12 @@
       transition: background 0.2s;
     }
 
-    .validate-btn {
+    .action-btn {
       background-color: #ff6b6b;
       color: white;
     }
 
-    .validate-btn:hover {
+    .action-btn:hover {
       background-color: #d9534f;
     }
 
@@ -103,90 +121,156 @@
     .download-btn:hover {
       background-color: #0056b3;
     }
-
-    .report-btn {
-      background-color: #333;
+    
+    /* ADDED: Style for the new navigation button */
+    .nav-btn {
+      background-color: #5a6268;
       color: white;
     }
 
-    .report-btn:hover {
-      background-color: #111;
+    .nav-btn:hover {
+      background-color: #4a4f54;
     }
+
+    .pdf-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pdf-controls select {
+      flex-grow: 1;
+    }
+
+    .pdf-controls button {
+        margin: 0;
+        width: auto;
+        padding: 10px 15px;
+    }
+
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>XML Standardization Tool</h2>
+  <h2>POTracker Standardization Tool</h2>
 
-
-  <!-- File Upload Input -->
   <label for="fileInput">Upload XML or JSON File:</label>
   <input type="file" id="fileInput" accept=".xml, .json" onchange="processFile()">
-
-  <!-- XML Editor with Line Numbers -->
-  <label for="xmlEditor">XML Preview (with Indentation & Line Numbers):</label>
-  <div class="editor-wrapper">
-    <textarea id="lineNumbers" readonly></textarea>
-    <textarea id="xmlEditor" placeholder="Your XML content will appear here..." oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+  
+  <div class="editor-container">
+    <div class="editor-pane">
+        <label for="xmlEditorInput">Input Preview:</label>
+        <div class="editor-wrapper">
+          <textarea id="lineNumbersInput" class="line-numbers" readonly></textarea>
+          <textarea id="xmlEditorInput" class="xml-editor" placeholder="Upload a file or paste content here..." oninput="syncAndUpdate('input')" onscroll="syncScroll('input')"></textarea>
+        </div>
+    </div>
+    
+    <div class="editor-pane">
+        <label for="xmlEditorOutput">Output Preview:</label>
+        <div class="editor-wrapper">
+          <textarea id="lineNumbersOutput" class="line-numbers" readonly></textarea>
+          <textarea id="xmlEditorOutput" class="xml-editor" placeholder="Standardized output will appear here..." readonly onscroll="syncScroll('output')"></textarea>
+        </div>
+    </div>
   </div>
 
-  <!-- Documentation Dropdown and View PDF Button -->
-<label for="schema">Select Documentation:</label>
-<div style="display: flex; gap: 10px; align-items: center;">
-  <select id="schema">
-    <option value="ODIN_Developer_Guide.pdf">ODIN Documentation</option>
-  </select>
-  <button class="download-btn" onclick="openDocumentationPDF()">View PDF</button>
-</div>
+  <label for="schema">Select Documentation:</label>
+  <div class="pdf-controls">
+    <select id="schema">
+      <option value="ODIN_Developer_Guide.pdf">ODIN Documentation</option>
+    </select>
+    <button class="download-btn" onclick="openDocumentationPDF()">View PDF</button>
+  </div>
 
-  <!-- Action buttons -->
-  <button class="validate-btn" onclick="validateXML()">Validate & Format</button>
-  <button class="download-btn" onclick="downloadXML()">Download Standardized XML</button>
-  <button class="report-btn" onclick="navigateTo('XMLGeneration.html')">Go to Power Outage Report Generation</button>
-  <button class="report-btn" onclick="navigateTo('MainUI.html')">Go to MainUI</button>
+  <button class="action-btn" onclick="runStandardization()">POTracker Standardization</button>
+  <button class="download-btn" onclick="downloadStandardizedXML()">Download Standardized XML</button>
+  <button class="nav-btn" onclick="navigateTo('XMLGeneration.html')">Go to XML Generation</button>
 </div>
 
 <script>
 
-  // Load file and populate editor
+  // Load file and populate the input editor
   function processFile() {
-    let fileInput = document.getElementById("fileInput");
-    let file = fileInput.files[0];
-    let reader = new FileReader();
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    if (!file) return;
 
+    const reader = new FileReader();
     reader.onload = function(event) {
-      let content = event.target.result;
-      let editor = document.getElementById("xmlEditor");
+      const content = event.target.result;
+      const editor = document.getElementById("xmlEditorInput");
+      document.getElementById("xmlEditorOutput").value = ""; // Clear output
 
       // Handle JSON file by converting it into XML
       if (file.name.endsWith(".json")) {
-        let jsonObj = JSON.parse(content);
-        let xmlContent = jsonToXml(jsonObj);
-        editor.value = formatXml(xmlContent);
+        try {
+            const jsonObj = JSON.parse(content);
+            const xmlContent = jsonToXml(jsonObj);
+            editor.value = formatXml(xmlContent);
+        } catch(e) {
+            alert("Error parsing JSON file: " + e.message);
+            editor.value = "";
+        }
       } else {
         editor.value = formatXml(content);
       }
-
-      updateLineNumbers(); // Sync Line Numbers
+      syncAndUpdate('input');
+      syncAndUpdate('output');
     };
-
-    if (file) {
-      reader.readAsText(file);
-    }
+    reader.readAsText(file);
   }
 
-  function openDocumentationPDF(){
+  // --- Main Action Functions ---
+
+  function runStandardization() {
+      const inputContent = document.getElementById("xmlEditorInput").value;
+      if (!inputContent.trim()) {
+          alert("Input Preview is empty. Please upload a file or paste content first.");
+          return;
+      }
+      
+      // Simulate loading a similar file by adding a comment
+      const standardizedContent = `\n${inputContent}`;
+      
+      const outputEditor = document.getElementById("xmlEditorOutput");
+      outputEditor.value = formatXml(standardizedContent); // Reformat for consistency
+      
+      syncAndUpdate('output');
+      alert("POTracker Standardization complete. Check the Output Preview.");
+  }
+  
+  function downloadStandardizedXML() {
+    // Simulate downloading a random file from a server
+    const randomFileContent = `<?xml version="1.0" encoding="UTF-8"?>
+<report id="789123">
+  <timestamp>2025-06-26T14:30:00Z</timestamp>
+  <status>COMPLETE</status>
+  <source>Server-Generated</source>
+  <message>This is a sample standardized file from the server.</message>
+</report>
+`;
+    const blob = new Blob([randomFileContent], { type: "application/xml" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "random_server_file.xml";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  function openDocumentationPDF() {
     const selected = document.getElementById("schema").value;
     window.open(selected, '_blank');
   }
-
-  // Convert JSON to XML
+  
+  // --- Editor and Formatting Helpers ---
+  
   function jsonToXml(json, root = "root") {
     let xml = `<${root}>`;
     for (let key in json) {
-      if (typeof json[key] === "object") {
-        xml += jsonToXml(json[key], key);
+      if (typeof json[key] === "object" && json[key] !== null) {
+        xml += jsonToXml(json[key], Array.isArray(json) ? "item" : key);
       } else {
         xml += `<${key}>${json[key]}</${key}>`;
       }
@@ -195,16 +279,16 @@
     return xml;
   }
 
-  // Format XML with Indentation
   function formatXml(xml) {
-    const PADDING = "  ";
+    if (typeof xml !== 'string' || !xml.trim()) return "";
+    const PADDING = "  "; // 2 spaces for indentation
     const reg = /(>)(<)(\/*)/g;
     let pad = 0;
     xml = xml.replace(reg, "$1\r\n$2$3");
     return xml.split("\r\n").map((node) => {
       let indent = 0;
       if (node.match(/.+<\/\w[^>]*>$/)) {
-        indent = 0; // No indentation needed
+        indent = 0;
       } else if (node.match(/^<\/\w/)) {
         if (pad !== 0) pad -= 1;
       } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
@@ -212,50 +296,36 @@
       } else {
         indent = 0;
       }
-      let line = PADDING.repeat(pad) + node;
+      let line = PADDING.repeat(pad) + node.trim();
       pad += indent;
       return line;
     }).join("\r\n");
   }
 
-   // Format and validate the XML when button is clicked
-  function validateXML() {
-    let xmlEditor = document.getElementById("xmlEditor");
-    let formattedXML = formatXml(xmlEditor.value.trim());
-    xmlEditor.value = formattedXML;
-    updateLineNumbers();
-    alert("XML validated and formatted with indentation!");
+  // --- Line Number and Scrolling Logic ---
+  
+  function syncAndUpdate(type) {
+    const editor = document.getElementById(`xmlEditor${type.charAt(0).toUpperCase() + type.slice(1)}`);
+    updateLineNumbers(type, editor);
   }
-
-  // Download the XML content as a file
-  function downloadXML() {
-    let text = document.getElementById("xmlEditor").value;
-    let blob = new Blob([text], { type: "application/xml" });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "standardized.xml";
-    link.click();
-  }
-
-  // Update line number area based on the content height
-  function updateLineNumbers() {
-    const editor = document.getElementById("xmlEditor");
-    const lineNumberArea = document.getElementById("lineNumbers");
+  
+  function updateLineNumbers(type, editor) {
+    const lineNumberArea = document.getElementById(`lineNumbers${type.charAt(0).toUpperCase() + type.slice(1)}`);
     const lines = editor.value.split('\n').length;
     lineNumberArea.value = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
   }
 
-  // Keep line numbers scrolling with text
-  function syncScroll() {
-    const editor = document.getElementById("xmlEditor");
-    const lineNumberArea = document.getElementById("lineNumbers");
+  function syncScroll(type) {
+    const editor = document.getElementById(`xmlEditor${type.charAt(0).toUpperCase() + type.slice(1)}`);
+    const lineNumberArea = document.getElementById(`lineNumbers${type.charAt(0).toUpperCase() + type.slice(1)}`);
     lineNumberArea.scrollTop = editor.scrollTop;
   }
-
-  //Navigation to other pages
+  
+  // ADDED: Navigation function for the new button
   function navigateTo(url) {
     window.location.href = url;
   }
+  
 </script>
 
 </body>
