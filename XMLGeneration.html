@@ -3,13 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XML Standardization App</title>
+    <title>Power Outage Report System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #fdf1d2;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header select {
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        .header button {
+            background-color: #f07b71;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            margin: 10px 6px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header button:hover {
+            background-color: #d55a50;
         }
 
         .container {
@@ -17,168 +47,113 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-            max-width: 650px;
-            margin: auto;
+            max-width: 700px;
+            margin: 20px auto;
         }
 
-        h2 {
-            color: #d9534f; /* Alert red */
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        input, select, textarea {
-            width: 100%;
+        #chatbox {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            height: 200px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fff;
             margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 70px);
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 15px;
         }
 
-        textarea {
-            height: 200px;
-            font-family: monospace;
-            background: #eef; /* Light blue for code */
-            resize: vertical;
+        #sendBtn {
+            padding: 10px 20px;
+            background-color: #ffc107;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-weight: bold;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            margin-bottom: 10px;
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-buttons button {
+            background-color: #333;
+            color: white;
+            padding: 8px 14px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
             cursor: pointer;
         }
 
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:nth-of-type(1) {
-            background-color: #ff6b6b; /* Red for validate */
-            color: white;
-        }
-
-        button:nth-of-type(2) {
-            background-color: #007BFF; /* Blue for download */
-            color: white;
-        }
-
-        .report-btn {
-            background-color: #333; /* Dark button for navigation */
-            color: white;
-        }
-
-        .report-btn:hover {
+        .quick-buttons button:hover {
             background-color: #111;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>XML Standardization Tool</h2>
-
-    <!-- File Upload -->
-    <label for="fileInput">Upload XML or JSON File:</label>
-    <input type="file" id="fileInput" accept=".xml, .json" onchange="processFile()">
-
-    <!-- XML Preview Editor -->
-    <label for="xmlEditor">XML Preview (Editable):</label>
-    <textarea id="xmlEditor" placeholder="Your XML content will appear here after upload..."></textarea>
-
-    <!-- Schema Selection -->
-    <label for="schema">Select Schema:</label>
-    <select id="schema">
-        <option value="schema1">Schema 1</option>
-        <option value="schema2">Schema 2</option>
-        <option value="schema3">Schema 3</option>
+<div class="header">
+    <h1>Power Outage Report System</h1>
+    <label for="modelSelect">Select Open LLM Model:</label>
+    <select id="modelSelect">
+        <option value="mistral">Mistral</option>
+        <option value="llama2">LLaMA 2</option>
+        <option value="gpt">GPT</option>
     </select>
+    <br>
+    <button onclick="navigateTo('XMLStandardization.html')">Power Outage Report Standardization</button>
+    <button onclick="navigateTo('XMLGeneration.html')">Power Outage Report Generation</button>
+</div>
 
-    <!-- Validate & Format Button -->
-    <button onclick="validateXML()">Validate & Format</button>
+<div class="container">
+    <h2>Power Outage Chatbot</h2>
+    <div id="chatbox">
+        <p><strong>Bot:</strong> Hello! Ask me about power outages.</p>
+    </div>
+    <input type="text" id="userInput" placeholder="Type your question here..." />
+    <button id="sendBtn" onclick="sendMessage()">Send</button>
 
-    <!-- Download Button -->
-    <button onclick="downloadXML()">Download Standardized XML</button>
-
-    <!-- Back to Main UI Button-->
-     <button class = "report-btn" onclick="navigateTo('MainUI.html')">Go back to MainUI</button>
-
-     <!-- Goes next to XMLStandardization.html-->
-     <button class = "report-btn" onclick="navigateTo('XMLStandardization.html')">Go to Power Outage Report Generation</button>
+    <div class="quick-buttons">
+        <button onclick="sendQuick('Outage Status')">Outage Status</button>
+        <button onclick="sendQuick('Last Outage')">Last Outage</button>
+        <button onclick="sendQuick('Outage Duration')">Outage Duration</button>
+        <button onclick="sendQuick('Affected Areas')">Affected Areas</button>
+        <button onclick="clearChat()">Clear Chat</button>
+    </div>
 </div>
 
 <script>
-    // Function to handle file upload and detect JSON or XML
-    function processFile() {
-        let fileInput = document.getElementById("fileInput");
-        let file = fileInput.files[0];
-        let reader = new FileReader();
-        
-        reader.onload = function(event) {
-            let content = event.target.result;
-            if (file.name.endsWith(".json")) {
-                // Convert JSON to XML
-                let jsonObj = JSON.parse(content);
-                let xmlContent = jsonToXml(jsonObj);
-                document.getElementById("xmlEditor").value = xmlContent;
-            } else {
-                // Assume it's XML
-                document.getElementById("xmlEditor").value = content;
-            }
-        };
-
-        if (file) {
-            reader.readAsText(file);
-        }
+    function navigateTo(url) {
+        window.location.href = url;
     }
 
-    // Function to convert JSON to XML format
-    function jsonToXml(json, root = "root") {
-        let xml = `<${root}>`;
-        for (let key in json) {
-            if (typeof json[key] === "object") {
-                xml += jsonToXml(json[key], key);
-            } else {
-                xml += `<${key}>${json[key]}</${key}>`;
-            }
-        }
-        xml += `</${root}>`;
-        return xml;
+    function sendMessage() {
+        const input = document.getElementById("userInput");
+        const chatbox = document.getElementById("chatbox");
+        if (input.value.trim() === "") return;
+
+        chatbox.innerHTML += `<p><strong>You:</strong> ${input.value}</p>`;
+        // Placeholder response
+        chatbox.innerHTML += `<p><strong>Bot:</strong> Processing your request about "${input.value}"...</p>`;
+        input.value = "";
+        chatbox.scrollTop = chatbox.scrollHeight;
     }
 
-    // Function to simulate XML validation & formatting
-    function validateXML() {
-        let xmlEditor = document.getElementById("xmlEditor");
-        let formattedXML = xmlEditor.value.trim(); // Simulated formatting
-        xmlEditor.value = formattedXML; // Update textarea with "formatted" XML
-        alert("XML validated and formatted!");
+    function sendQuick(message) {
+        document.getElementById("userInput").value = message;
+        sendMessage();
     }
 
-    // Function to download the processed XML
-    function downloadXML() {
-        let text = document.getElementById("xmlEditor").value;
-        let blob = new Blob([text], { type: "application/xml" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "standardized.xml";
-        link.click();
-    }
-
-    function navigateTo(url){
-        window.location.href= url
+    function clearChat() {
+        document.getElementById("chatbox").innerHTML = '<p><strong>Bot:</strong> Hello! Ask me about power outages.</p>';
     }
 </script>
 
