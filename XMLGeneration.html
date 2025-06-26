@@ -140,7 +140,7 @@
         <option>Mistral-original</option>
         <option>Mistral-POTracker</option>
     </select>
-    <button class="report-btn" onclick="navigateTo('XMLStandardization.html')">Power Outage Report Standardization</button>
+    <button class="report-btn" onclick="navigateTo('index.html')">Power Outage Report Standardization</button>
     <button class="report-btn" onclick="showView('generation')">Power Outage Report Generation</button>
     <button id="show-chatbot-btn" class="nav-btn" onclick="showView('chatbot')" style="display:none;">Show Chatbot</button>
 </div>
@@ -235,8 +235,10 @@
 
     // This function is for navigating to the external standardization page
     function navigateTo(url) {
+    if (confirm("Are you sure you want to leave this page?")) {
         window.location.href = url;
     }
+}
 
     function clearChat() {
         chatbox.innerHTML = '<p><b>Bot:</b> Hello! Ask me about power outages.</p>';
