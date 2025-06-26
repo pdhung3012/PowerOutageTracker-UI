@@ -3,157 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Outage Report System</title>
+    <title>Power Outage Chatbot</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .header {
-            background-color: #fdf1d2;
+            margin: 20px;
             padding: 20px;
+            background-color: #f4f4f4;
             text-align: center;
         }
 
-        .header h1 {
-            margin: 0;
-        }
-
-        .header select {
-            padding: 8px;
-            margin-top: 10px;
-        }
-
-        .header button {
-            background-color: #f07b71;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            margin: 10px 6px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .header button:hover {
-            background-color: #d55a50;
+        .report-container {
+            background-color: #fff3cd; /* Light yellow background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .container {
             background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-            max-width: 700px;
-            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        
+        .generation-view-container {
+             background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        
+        .generation-view-container h1 {
+            color: #333;
         }
 
-        #chatbox {
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            height: 200px;
-            padding: 15px;
+        .generation-view-container p {
+            color: #555;
+            font-size: 18px;
+        }
+        
+        .chatbox {
+            border: 1px solid #666;
+            border-radius: 5px;
+            padding: 10px;
+            height: 300px;
             overflow-y: auto;
-            background: #fff;
-            margin-bottom: 15px;
+            background: #fefefe;
+            text-align: left;
         }
 
-        input[type="text"] {
-            width: calc(100% - 70px);
+        .chatbox a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+        .chatbox a:hover {
+            text-decoration: underline;
+        }
+
+        .input-box {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        input {
+            flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 16px;
         }
 
-        #sendBtn {
-            padding: 10px 20px;
-            background-color: #ffc107;
+        button {
+            padding: 10px;
             border: none;
             border-radius: 5px;
-            margin-left: 10px;
-            font-weight: bold;
-        }
-
-        .quick-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .quick-buttons button {
-            background-color: #333;
-            color: white;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 6px;
+            margin: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
-        .quick-buttons button:hover {
-            background-color: #111;
+        .send-btn {
+            background: #ffcc00; /* Yellow for attention */
+            color: black;
+        }
+
+        .send-btn:hover {
+            background: #e0b800;
+        }
+
+        .sample-btn {
+            background: #333; /* Dark gray */
+            color: white;
+        }
+
+        .sample-btn:hover {
+            background: #111;
+        }
+
+        .report-btn {
+            background-color: #ff6b6b; /* Alert red */
+            color: white;
+        }
+
+        .report-btn:hover {
+            background-color: #d9534f;
+        }
+        
+        .nav-btn {
+             background-color: #007bff; /* Blue for navigation */
+             color: white;
+        }
+        
+        .nav-btn:hover{
+            background-color: #0056b3;
+        }
+
+        .dropdown {
+            padding: 5px;
+            margin-bottom: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Power Outage Report System</h1>
-    <label for="modelSelect">Select Open LLM Model:</label>
-    <label for="modelSelect">Select Open LLM Model:</label>
-<select id="modelSelect">
-    <option value="mistral-org">Mistral-org</option>
-    <option value="mistral-opt">Mistral-opt</option>
-</select>
-    <br>
-    <button onclick="navigateTo('XMLStandardization.html')">Power Outage Report Standardization</button>
-    <button onclick="navigateTo('XMLGeneration.html')">Power Outage Report Generation</button>
+<div class="report-container">
+    <h2>Power Outage Report System</h2>
+    <p> Select Open LLM Model:</p>
+    <select class="dropdown">
+        <option>Mistral-original</option>
+        <option>Mistral-POTracker</option>
+    </select>
+    <button class="report-btn" onclick="navigateTo('XMLStandardization.html')">Power Outage Report Standardization</button>
+    <button class="report-btn" onclick="showView('generation')">Power Outage Report Generation</button>
+    <button id="show-chatbot-btn" class="nav-btn" onclick="showView('chatbot')" style="display:none;">Show Chatbot</button>
 </div>
 
-<div class="container">
+<div id="chatbot-view" class="container">
     <h2>Power Outage Chatbot</h2>
-    <div id="chatbox">
-        <p><strong>Bot:</strong> Hello! Ask me about power outages.</p>
-    </div>
-    <input type="text" id="userInput" placeholder="Type your question here..." />
-    <button id="sendBtn" onclick="sendMessage()">Send</button>
 
-    <div class="quick-buttons">
-        <button onclick="sendQuick('Outage Status')">Outage Status</button>
-        <button onclick="sendQuick('Last Outage')">Last Outage</button>
-        <button onclick="sendQuick('Outage Duration')">Outage Duration</button>
-        <button onclick="sendQuick('Affected Areas')">Affected Areas</button>
-        <button onclick="clearChat()">Clear Chat</button>
+    <div class="chatbox" id="chatbox">
+        <p><b>Bot:</b> Hello! Ask me about power outages.</p>
     </div>
+
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="Type your question here...">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <h4>Quick Questions:</h4>
+    <button class="sample-btn" onclick="handleQuickQuestion('What is the current power outage status?')">Outage Status</button>
+    <button class="sample-btn" onclick="handleQuickQuestion('When was the last recorded power outage?')">Last Outage</button>
+    <button class="sample-btn" onclick="handleQuickQuestion('How long do outages typically last?')">Outage Duration</button>
+    <button class="sample-btn" onclick="handleQuickQuestion('What areas are affected by the latest outage?')">Affected Areas</button>
+    <button class="sample-btn" onclick="clearChat()">Clear Chat</button>
+</div>
+
+<div id="generation-view" class="generation-view-container" style="display:none;">
+    <h1>Power Outage Report Generation</h1>
+    <p>This is the page for generating power outage reports.</p>
 </div>
 
 <script>
+    // --- View Switching Logic ---
+    const chatbotView = document.getElementById('chatbot-view');
+    const generationView = document.getElementById('generation-view');
+    const showChatbotBtn = document.getElementById('show-chatbot-btn');
+
+    function showView(viewName) {
+        if (viewName === 'chatbot') {
+            chatbotView.style.display = 'block';
+            generationView.style.display = 'none';
+            showChatbotBtn.style.display = 'none';
+        } else if (viewName === 'generation') {
+            chatbotView.style.display = 'none';
+            generationView.style.display = 'block';
+            showChatbotBtn.style.display = 'inline-block';
+        }
+    }
+
+    // --- Chatbot Logic ---
+    const chatbox = document.getElementById("chatbox");
+    const inputField = document.getElementById("userInput");
+
+    let selectedModel = "Mistral-original";
+    document.querySelector(".dropdown").addEventListener("change", function() {
+        selectedModel = this.value;
+    });
+
+    inputField.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const message = inputField.value.trim();
+        if (message === "") return;
+
+        // Add user's message to chatbox
+        chatbox.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Show "typing.." placeholder
+        chatbox.innerHTML += '<p id="loading"><i>Bot is typing...</i></p>';
+        inputField.value = "";
+
+        // MODIFIED: Bot gives a random, templated response
+        setTimeout(() => {
+            document.getElementById("loading").remove();
+            const botReply = `The statistic on your question is available at this <a href="#">file</a>.`;
+            chatbox.innerHTML += `<p><b>Bot:</b> ${botReply}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }, 1000);
+    }
+    
+    // MODIFIED: New function to handle quick questions
+    function handleQuickQuestion(question) {
+        // Add question to the chat list
+        chatbox.innerHTML += `<p class="user"><b>You:</b> ${question}</p>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+        // Update the input textbox
+        inputField.value = question;
+    }
+
+    // This function is for navigating to the external standardization page
     function navigateTo(url) {
         window.location.href = url;
     }
 
-    function sendMessage() {
-        const input = document.getElementById("userInput");
-        const chatbox = document.getElementById("chatbox");
-        if (input.value.trim() === "") return;
-
-        chatbox.innerHTML += `<p><strong>You:</strong> ${input.value}</p>`;
-        // Placeholder response
-        chatbox.innerHTML += `<p><strong>Bot:</strong> Processing your request about "${input.value}"...</p>`;
-        input.value = "";
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    function sendQuick(message) {
-        document.getElementById("userInput").value = message;
-        sendMessage();
-    }
-
     function clearChat() {
-        document.getElementById("chatbox").innerHTML = '<p><strong>Bot:</strong> Hello! Ask me about power outages.</p>';
+        chatbox.innerHTML = '<p><b>Bot:</b> Hello! Ask me about power outages.</p>';
+        inputField.value = '';
+    }
+
+    window.onload = function() {
+        inputField.focus();
     }
 </script>
 
