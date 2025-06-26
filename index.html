@@ -122,7 +122,6 @@
       background-color: #0056b3;
     }
     
-    /* ADDED: Style for the new navigation button */
     .nav-btn {
       background-color: #5a6268;
       color: white;
@@ -154,11 +153,20 @@
 
 <div class="container">
   <h2>POTracker Standardization Tool</h2>
+  
+  <!-- ADDED: LLM Model Selection Dropdown -->
+  <label for="llm-model">Select Open LLM Model:</label>
+  <select id="llm-model">
+      <option value="mistral-original">Mistral-original</option>
+      <option value="mistral-potracker">Mistral-POTracker</option>
+  </select>
 
+  <!-- File Upload Input -->
   <label for="fileInput">Upload XML or JSON File:</label>
   <input type="file" id="fileInput" accept=".xml, .json" onchange="processFile()">
   
   <div class="editor-container">
+    <!-- Input Preview Pane -->
     <div class="editor-pane">
         <label for="xmlEditorInput">Input Preview:</label>
         <div class="editor-wrapper">
@@ -167,6 +175,7 @@
         </div>
     </div>
     
+    <!-- Output Preview Pane -->
     <div class="editor-pane">
         <label for="xmlEditorOutput">Output Preview:</label>
         <div class="editor-wrapper">
@@ -176,6 +185,7 @@
     </div>
   </div>
 
+  <!-- Documentation Dropdown and View PDF Button -->
   <label for="schema">Select Documentation:</label>
   <div class="pdf-controls">
     <select id="schema">
@@ -184,6 +194,7 @@
     <button class="download-btn" onclick="openDocumentationPDF()">View PDF</button>
   </div>
 
+  <!-- Action buttons -->
   <button class="action-btn" onclick="runStandardization()">POTracker Standardization</button>
   <button class="download-btn" onclick="downloadStandardizedXML()">Download Standardized XML</button>
   <button class="nav-btn" onclick="navigateTo('XMLGeneration.html')">Go to XML Generation</button>
@@ -232,7 +243,7 @@
       }
       
       // Simulate loading a similar file by adding a comment
-      const standardizedContent = `\n${inputContent}`;
+      const standardizedContent = `<!-- Standardized by POTracker -->\n${inputContent}`;
       
       const outputEditor = document.getElementById("xmlEditorOutput");
       outputEditor.value = formatXml(standardizedContent); // Reformat for consistency
@@ -321,7 +332,6 @@
     lineNumberArea.scrollTop = editor.scrollTop;
   }
   
-  // ADDED: Navigation function for the new button
   function navigateTo(url) {
     window.location.href = url;
   }
