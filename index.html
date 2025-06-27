@@ -197,15 +197,235 @@
   <!-- Action buttons -->
   <button class="action-btn" onclick="runStandardization()">POTracker Standardization</button>
   <button class="download-btn" onclick="downloadStandardizedXML()">Download Standardized XML</button>
-  <button class="nav-btn" onclick="navigateTo('XMLGeneration.html')">Go to XML Generation</button>
+  <button class="nav-btn" onclick="navigateTo('XMLGeneration.html')">Go to PowerOutage Generation</button>
 </div>
 
 <script>
 
+list_org_outputs = [
+  `<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+   <ns0:Outage>
+      <ns0:mRID>OUTAGE-20231005-004</ns0:mRID>
+      <ns0:communityDescriptor>FIPS County Code</ns0:communityDescriptor>
+      <ns0:cause>Weather Conditions</ns0:cause>
+      <ns0:causeKind>unplanned</ns0:causeKind>
+      <ns0:metersAffected>40</ns0:metersAffected>
+      <ns0:outageKind>outageReported</ns0:outageKind>
+      <ns0:statusKind>restored</ns0:statusKind>
+      <ns0:Names>
+         <ns0:name>Sample Energy Co</ns0:name>
+         <ns0:nameType>UtilityName</ns0:nameType>
+         <ns0:nameTypeAuthority>SampleEntity</ns0:nameTypeAuthority>
+      </ns0:Names>
+   </ns0:Outage>
+</ns0:PubOutages>`,
+`<PubOutages>
+  <Outage>
+    <area>LITCHFIELD</area>
+    <affected>None</affected>
+    <total_customers>3620</total_customers>
+    <report_time>Today</report_time>
+  </Outage>
+</PubOutages>`,
+`<PubOutages>
+  <Outage>
+    <county>ATTALA</county>
+    <affectedMeters>zero</affectedMeters>
+    <powerRestored>100%</powerRestored>
+    <latitude>33.094228329809724</latitude>
+    <longitude>-89.81118393234672</longitude>
+    <updatedTime>recently</updatedTime>
+  </Outage>
+</PubOutages>`,
+`<PubOutages>
+  <Outage>
+    <location>Cold Spring</location>
+    <totalCustomers>523</totalCustomers>
+    <customersWithoutPower>None</customersWithoutPower>
+    <coordinates>-78.88,42.08</coordinates>
+    <reportedTime>recent</reportedTime>
+  </Outage>
+</PubOutages>`,
+`<PubOutages>
+  <Outage>
+    <town>Dickinson</town>
+    <served_customers>389</served_customers>
+    <customers_out>none</customers_out>
+    <percent_outage>0%</percent_outage>
+    <location_coordinates>-74.5446,44.7299</location_coordinates>
+    <updateTime>recently</updateTime>
+  </Outage>
+</PubOutages>`,
+
+];
+
+list_opt_outputs = [
+  `<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+   <ns0:Outage>
+      <ns0:mRID>2025-03-07-0445</ns0:mRID>
+      <ns0:communityDescriptor>TRF_1335752010</ns0:communityDescriptor>
+      <ns0:cause>Pending Investigation</ns0:cause>
+      <ns0:causeKind>Event Kind to Cause Outage</ns0:causeKind>
+      <ns0:metersAffected>1</ns0:metersAffected>
+      <ns0:outageKind>outageReported</ns0:outageKind>
+      <ns0:reportedStartTime>2025-03-07T13:13:02-06:00</ns0:reportedStartTime>
+      <ns0:statusKind>outageStatusKind</ns0:statusKind>
+      <ns0:utilityDisclaimer>Utility Disclaimer Text</ns0:utilityDisclaimer>
+      <ns0:actualPeriod>
+         <ns0:start>2025-03-07T13:13:02-06:00</ns0:start>
+      </ns0:actualPeriod>
+      <ns0:EstimatedRestorationTime>
+         <ns0:ert>2025-03-07T13:13:02-06:00</ns0:ert>
+         <ns0:confidenceKind>low</ns0:confidenceKind>
+         <ns0:ertSource>Source of ERT</ns0:ertSource>
+      </ns0:EstimatedRestorationTime>
+      <ns0:OutageArea>
+         <ns0:metersServed>1</ns0:metersServed>
+         <ns0:outageAreaKind>SERVICE_AREA</ns0:outageAreaKind>
+      </ns0:OutageArea>
+      <ns0:Incident>
+         <ns0:cause>Pending Investigation</ns0:cause>
+         <ns0:Location>
+            <ns0:PositionPoints>
+               <ns0:sequenceNumber>1</ns0:sequenceNumber>
+               <ns0:xPosition>31.28250642</ns0:xPosition>
+               <ns0:yPosition>-90.25191364</ns0:yPosition>
+            </ns0:PositionPoints>
+         </ns0:Location>
+      </ns0:Incident>
+      <ns0:Names>
+         <ns0:name>ENTER_UTILITY_ID</ns0:name>
+         <ns0:nameType>UtilityID</ns0:nameType>
+         <ns0:nameTypeAuthority>Source for name information (preferably EIA)</ns0:nameTypeAuthority>
+      </ns0:Names>
+      <ns0:Names>
+         <ns0:name>ENTER_UTILITY_NAME</ns0:name>
+         <ns0:nameType>UtilityName</ns0:nameType>
+         <ns0:nameTypeAuthority>Source for name information (preferably EIA)</ns0:nameTypeAuthority>
+      </ns0:Names>
+   </ns0:Outage>
+</ns0:PubOutages>
+`,
+  `<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+  <ns0:Outage>
+    <ns0:mRID>111</ns0:mRID>
+    <ns0:communityDescriptor>LITCHFIELD</ns0:communityDescriptor>
+    <ns0:metersAffected>0</ns0:metersAffected>
+    <ns0:outageKind>outageReported</ns0:outageKind>
+    <ns0:reportedStartTime>2023-06-26T00:00:00Z</ns0:reportedStartTime>
+    <ns0:OutageArea>
+      <ns0:metersServed>3620</ns0:metersServed>
+      <ns0:outageAreaKind>serviceArea</ns0:outageAreaKind>
+    </ns0:OutageArea>
+  </ns0:Outage>
+</ns0:PubOutages>`,
+`<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+  <ns0:Outage>
+    <ns0:mRID>county3_2</ns0:mRID>
+    <ns0:communityDescriptor>28007</ns0:communityDescriptor> <!-- FIPS code -->
+    <ns0:cause>No outage</ns0:cause>
+    <ns0:metersAffected>0</ns0:metersAffected>
+    <ns0:outageKind>outageReported</ns0:outageKind>
+    <ns0:reportedStartTime>2025-03-06T10:10:07Z</ns0:reportedStartTime>
+    <ns0:statusKind>fieldComplete</ns0:statusKind>
+    <ns0:actualPeriod>
+      <ns0:start>2025-03-06T10:10:07Z</ns0:start>
+    </ns0:actualPeriod>
+    <ns0:OutageArea>
+      <ns0:metersServed>5350</ns0:metersServed>
+      <ns0:outageAreaKind>county</ns0:outageAreaKind>
+    </ns0:OutageArea>
+    <ns0:Names>
+      <ns0:name>54321</ns0:name>
+      <ns0:nameType>UtilityID</ns0:nameType>
+      <ns0:nameTypeAuthority>EIA</ns0:nameTypeAuthority>
+    </ns0:Names>
+  </ns0:Outage>
+</ns0:PubOutages>
+`,
+`<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+  <ns0:Outage>
+    <ns0:mRID>30d77369-2b12-4c0d-867d-31b2e7a4f18a_42</ns0:mRID>
+    <ns0:communityDescriptor>36009</ns0:communityDescriptor>
+    <ns0:cause>No outage</ns0:cause>
+    <ns0:metersAffected>0</ns0:metersAffected>
+    <ns0:outageKind>outageReported</ns0:outageKind>
+    <ns0:reportedStartTime>2025-03-06T10:10:07Z</ns0:reportedStartTime>
+    <ns0:statusKind>fieldComplete</ns0:statusKind>
+    <ns0:actualPeriod>
+      <ns0:start>2025-03-06T10:10:07Z</ns0:start>
+    </ns0:actualPeriod>
+    <ns0:OutageArea>
+      <ns0:metersServed>523</ns0:metersServed>
+      <ns0:outageAreaKind>county</ns0:outageAreaKind>
+    </ns0:OutageArea>
+    <ns0:Incident>
+      <ns0:cause>No incident</ns0:cause>
+    </ns0:Incident>
+  </ns0:Outage>
+</ns0:PubOutages>
+`,
+`<?xml version="1.0" encoding="UTF-8"?>
+<ns0:PubOutages xmlns:ns0="http://iec.ch/TC57/2014/PubOutages#">
+  <ns0:Outage>
+    <ns0:mRID>06c8ed31-48c2-4104-a9a2-41f844152ae3_70</ns0:mRID>
+    <ns0:communityDescriptor>36033</ns0:communityDescriptor>
+    <ns0:cause>No outage</ns0:cause>
+    <ns0:metersAffected>0</ns0:metersAffected>
+    <ns0:outageKind>outageReported</ns0:outageKind>
+    <ns0:reportedStartTime>2025-03-06T10:10:07Z</ns0:reportedStartTime>
+    <ns0:statusKind>fieldComplete</ns0:statusKind>
+    <ns0:actualPeriod>
+      <ns0:start>2025-03-06T10:10:07Z</ns0:start>
+    </ns0:actualPeriod>
+    <ns0:OutageArea>
+      <ns0:metersServed>389</ns0:metersServed>
+      <ns0:outageAreaKind>county</ns0:outageAreaKind>
+    </ns0:OutageArea>
+  </ns0:Outage>
+</ns0:PubOutages>
+`,
+
+];
+
+list_models=['org-mistral','opt-mistral']
+active_index=-1
+active_model=1
+let allText=''
+
+
+function readServerTextFileXHR(filePath) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', filePath, true); // true for asynchronous request
+  xhr.onload = function() {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      console.log(xhr.responseText);
+      allText=xhr.responseText; // Process the file content
+    } else {
+      console.error('Error reading file:', xhr.statusText);
+    }
+  };
+  xhr.onerror = function() {
+    console.error('Network error occurred.');
+  };
+  xhr.send();
+}
+
+
   // Load file and populate the input editor
   function processFile() {
+    const llm_model = document.getElementById("llm-model");
+    // alert(llm_model.options[llm_model.selectedIndex].value)
     const fileInput = document.getElementById("fileInput");
     const file = fileInput.files[0];
+    file_name=file.name
+    active_index=parseInt(file_name.replace('.json',''))
+    // alert(active_index)
     if (!file) return;
 
     const reader = new FileReader();
@@ -217,9 +437,10 @@
       // Handle JSON file by converting it into XML
       if (file.name.endsWith(".json")) {
         try {
-            const jsonObj = JSON.parse(content);
-            const xmlContent = jsonToXml(jsonObj);
-            editor.value = formatXml(xmlContent);
+            // const jsonObj = JSON.parse(content);
+            // const xmlContent = jsonToXml(jsonObj);
+            // editor.value = formatXml(xmlContent);
+            editor.value = formatXml(content);
         } catch(e) {
             alert("Error parsing JSON file: " + e.message);
             editor.value = "";
@@ -241,31 +462,79 @@
           alert("Input Preview is empty. Please upload a file or paste content first.");
           return;
       }
+      const llm_model = document.getElementById("llm-model");
+      active_llm_index=llm_model.selectedIndex
+      // alert(active_llm_index)
+      selected_llm=list_models[active_llm_index]
+
       
       // Simulate loading a similar file by adding a comment
-      const standardizedContent = `<!-- Standardized by POTracker -->\n${inputContent}`;
-      
+      // const standardizedContent = `<!-- Standardized by POTracker -->\n${inputContent}`;
+      const currentPathname = window.location.pathname;
+      const lastSlashIndex = currentPathname.lastIndexOf('/');
+      let currentDirectory = '';
+
+      if (lastSlashIndex !== -1) {
+        currentDirectory = currentPathname.substring(0, lastSlashIndex + 1); // Include the trailing slash
+      } else {
+        currentDirectory = '/'; // Root directory if no slashes are present
+      }
+
+
+
+      link_gen=currentDirectory+'/stan/sample-'+active_index+'/'+selected_llm+'.xml'
+      // readServerTextFileXHR(link_gen)
+
+
       const outputEditor = document.getElementById("xmlEditorOutput");
-      outputEditor.value = formatXml(standardizedContent); // Reformat for consistency
+      if (active_llm_index==0){
+        outputEditor.value = formatXml(list_org_outputs[active_index]); // Reformat for consistency
+    } else{
+      outputEditor.value = formatXml(list_opt_outputs[active_index]);
+    }
       
       syncAndUpdate('output');
       alert("POTracker Standardization complete. Check the Output Preview.");
   }
   
   function downloadStandardizedXML() {
+    // alert('here')
     // Simulate downloading a random file from a server
-    const randomFileContent = `<?xml version="1.0" encoding="UTF-8"?>
-<report id="789123">
-  <timestamp>2025-06-26T14:30:00Z</timestamp>
-  <status>COMPLETE</status>
-  <source>Server-Generated</source>
-  <message>This is a sample standardized file from the server.</message>
-</report>
-`;
+      const randomFileContent = `<?xml version="1.0" encoding="UTF-8"?>
+  <report id="789123">
+    <timestamp>2025-06-26T14:30:00Z</timestamp>
+    <status>COMPLETE</status>
+    <source>Server-Generated</source>
+    <message>This is a sample standardized file from the server.</message>
+  </report>
+  `;
+      
+  const llm_model = document.getElementById("llm-model");
+        active_llm_index=llm_model.selectedIndex
+        selected_llm=list_models[active_llm_index]
+      
+
+      
+      // Simulate loading a similar file by adding a comment
+      // const standardizedContent = `<!-- Standardized by POTracker -->\n${inputContent}`;
+      const currentPathname = window.location.pathname;
+      const lastSlashIndex = currentPathname.lastIndexOf('/');
+      let currentDirectory = '';
+
+      if (lastSlashIndex !== -1) {
+        currentDirectory = currentPathname.substring(0, lastSlashIndex + 1); // Include the trailing slash
+      } else {
+        currentDirectory = '/'; // Root directory if no slashes are present
+      }
+
+
+
+      link_gen=currentDirectory+'/stan/sample-'+active_index+'/'+selected_llm+'.xml'
+      console.log(link_gen)
     const blob = new Blob([randomFileContent], { type: "application/xml" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "random_server_file.xml";
+    link.download = link_gen;
     link.click();
     URL.revokeObjectURL(link.href);
   }
