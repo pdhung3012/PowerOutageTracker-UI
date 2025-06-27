@@ -141,7 +141,7 @@
         <option>Mistral-POTracker</option>
     </select>
     <button class="report-btn" onclick="navigateTo('index.html')">Power Outage Report Standardization</button>
-    <button class="report-btn" onclick="showView('generation')">Power Outage Report Generation</button>
+    <!-- <button class="report-btn" onclick="showView('generation')">Power Outage Report Generation</button> -->
     <button id="show-chatbot-btn" class="nav-btn" onclick="showView('chatbot')" style="display:none;">Show Chatbot</button>
 </div>
 
@@ -158,10 +158,10 @@
     </div>
 
     <h4>Quick Questions:</h4>
-    <button class="sample-btn" onclick="handleQuickQuestion('What is the current power outage status?')">Outage Status</button>
-    <button class="sample-btn" onclick="handleQuickQuestion('When was the last recorded power outage?')">Last Outage</button>
-    <button class="sample-btn" onclick="handleQuickQuestion('How long do outages typically last?')">Outage Duration</button>
-    <button class="sample-btn" onclick="handleQuickQuestion('What areas are affected by the latest outage?')">Affected Areas</button>
+    <button class="sample-btn" onclick="handleQuickQuestion(1)">Outage Status</button>
+    <button class="sample-btn" onclick="handleQuickQuestion(2)">Last Outage</button>
+    <button class="sample-btn" onclick="handleQuickQuestion(3)">Outage Duration</button>
+    <button class="sample-btn" onclick="handleQuickQuestion(4)">Affected Areas</button>
     <button class="sample-btn" onclick="clearChat()">Clear Chat</button>
 </div>
 
@@ -171,6 +171,189 @@
 </div>
 
 <script>
+    list_questions=['Is there a power outage in Ohio?','Tell me information about the latest power outage in US?','How many power outage cases recorded from first week of March, 2025?','List the counties in Arizona that have a severe impact by the power outage.']
+    list_answers=[
+        `According to the provided data from the input JSON, here's the current power outage status for Ohio:
+
+Overall:
+
+State: OHIO
+
+Customers Affected: 402
+
+Total Customers Served: 2,100,210
+
+Percent Customers Affected: 0.02%
+
+Estimated Time of Restoration (ETR): 2025-03-07T17:00:00Z
+
+Areas with reported outages:
+WOOD County:
+
+Customers Affected: 1
+
+Customers Served: 40,933
+
+Percent Customers Affected: 0.01%
+
+ETR: 2025-03-07T15:00:00Z
+
+Specifically, PERRYSBURG Township has an outage with 1 customer affected out of 12,670 served.
+
+OTTAWA County:
+
+Customers Affected: 1
+
+Customers Served: 32,426
+
+Percent Customers Affected: 0.01%
+
+ETR: 2025-03-07T15:00:00Z
+
+Specifically, ERIE Township has an outage with 1 customer affected out of 1,253 served.
+
+SUMMIT County:
+
+Customers Affected: 1
+
+Customers Served: 227,162
+
+Percent Customers Affected: 0.01%
+
+ETR: 2025-03-07T16:00:00Z
+
+Specifically, COVENTRY Township has an outage with 1 customer affected out of 7,316 served.
+
+TRUMBULL County:
+
+Customers Affected: 38
+
+Customers Served: 80,314
+
+Percent Customers Affected: 0.05%
+
+ETR: 2025-03-07T16:00:00Z
+
+Specifically:
+
+CORTLAND Township: 8 customers affected out of 3,715 served.
+
+GIRARD Township: 20 customers affected out of 4,807 served.
+
+LIBERTY Township: 10 customers affected out of 6,518 served.
+
+ERIE County:
+
+Customers Affected: 17
+
+Customers Served: 41,032
+
+Percent Customers Affected: 0.04%
+
+ETR: 2025-03-07T16:30:00Z
+
+Specifically, BERLIN Township: 15 customers affected out of 1,367 served, and BERLIN HEIGHTS Township: 2 customers affected out of 420 served.
+
+Summary Statistics:
+Total Customers Affected in Ohio: 402
+
+Percentage Affected: 0.02%
+
+Affected Counties: WOOD, OTTAWA, SUMMIT, TRUMBULL, ERIE.
+
+If you would like this data structured according to the ODIN standardized XML format, please let me know!`,
+`Most Recent Outages:
+Phoenix, Arizona:
+
+Affected Customers: 1,558
+
+Issue: Cause under investigation.
+
+Location: NW GRAND AVE TO N 39TH AVE AND W ORANGEWOOD AVE TO W CAMPBELL AVE
+
+Outage Began: March 7, 2025, 17:46 UTC
+
+Estimated Restoration Time: March 7, 2025, 19:45 UTCinput_nonstandard_march
+
+Tempe, Arizona:
+
+Affected Customers: 261
+
+Issue: Cause under investigation.
+
+Location: S 40TH ST TO S PRIEST DR AND W HOHOKAM EXPY TO E BROADWAY RD
+
+Outage Began: March 7, 2025, 16:52 UTC
+
+Estimated Restoration Time: March 7, 2025, 18:52 UTCinput_nonstandard_march
+
+Phoenix, Arizona:
+
+Affected Customers: 314
+
+Issue: Cause under investigation.
+
+Location: S 20TH ST TO S 32ND ST AND E BASELINE RD TO E RAY RD
+
+Outage Began: March 7, 2025, 09:55 UTC
+
+Estimated Restoration Time: March 7, 2025, 18:30 UTCinput_nonstandard_march
+
+Phoenix, Arizona:
+
+Affected Customers: 251
+
+Issue: Electrical equipment damaged.
+
+Location: N 43RD AVE TO N 31ST AVE AND W CAMELBACK RD TO W INDIAN SCHOOL RD
+
+Outage Began: March 7, 2025, 14:00 UTC
+
+Estimated Restoration Time: March 8, 2025, 01:00 UTCinput_nonstandard_march
+
+Phoenix, Arizona:
+
+Affected Customers: 315
+
+Issue: Electrical equipment damaged.
+
+Location: N 47TH AVE TO N 35TH AVE AND GRAND AVE TO W OSBORN RD
+
+Outage Began: March 7, 2025, 14:01 UTC
+
+Estimated Restoration Time: March 8, 2025, 01:00 UTCinput_nonstandard_march
+
+Summary of Major Recent Outages:
+Largest outage involves 1,558 customers in Phoenix, Arizona.
+
+Common reasons include damaged electrical equipment and ongoing investigations.
+
+Restoration times vary, with the latest estimated at March 8, 2025, 01:00 UTC.`,
+`Based on the XML report provided, there are 5 recorded power outage cases for the first week of March 2025. These are summarized below:
+
+Phoenix, AZ - 1,558 customers affected
+
+Tempe, AZ - 261 customers affected
+
+Phoenix, AZ - 314 customers affected
+
+Phoenix, AZ - 251 customers affected
+
+Phoenix, AZ - 315 customers affected`,
+`Based on the provided data, the severe power outages in Arizona specifically impact the following counties (as inferred from locations):
+
+Maricopa County (covering Phoenix and Tempe)
+
+Phoenix experienced multiple outages with customer impacts ranging up to 1,558 customers.
+
+Tempe had an outage affecting 261 customers.
+
+These are significant impacts indicating a severe situation primarily in Maricopa County due to the number of customers affected.
+
+If you would like this information reflected or structured differently, please let me know!`
+    ]
+
+    active_index=-1
     // --- View Switching Logic ---
     const chatbotView = document.getElementById('chatbot-view');
     const generationView = document.getElementById('generation-view');
@@ -218,7 +401,22 @@
         // MODIFIED: Bot gives a random, templated response
         setTimeout(() => {
             document.getElementById("loading").remove();
-            const botReply = `The statistic on your question is available at this <a href="#">file</a>.`;
+
+            const currentPathname = window.location.pathname;
+            const lastSlashIndex = currentPathname.lastIndexOf('/');
+            let currentDirectory = '';
+
+            if (lastSlashIndex !== -1) {
+                currentDirectory = currentPathname.substring(0, lastSlashIndex + 1); // Include the trailing slash
+            } else {
+                currentDirectory = '/'; // Root directory if no slashes are present
+            }
+
+
+
+            link_gen=currentDirectory+'/gen/sample-'+(active_index+1)+'/'+'answer.xml'
+
+            const botReply = list_answers[active_index]+`<br/>The statistic (in standard XML) on your question is available at this <a href="${link_gen}">file</a>.`;
             chatbox.innerHTML += `<p><b>Bot:</b> ${botReply}</p>`;
             chatbox.scrollTop = chatbox.scrollHeight;
         }, 1000);
@@ -227,10 +425,11 @@
     // MODIFIED: New function to handle quick questions
     function handleQuickQuestion(question) {
         // Add question to the chat list
-        chatbox.innerHTML += `<p class="user"><b>You:</b> ${question}</p>`;
+        // chatbox.innerHTML += `<p class="user"><b>You:</b> ${list_questions[question-1]}</p>`;
         chatbox.scrollTop = chatbox.scrollHeight;
         // Update the input textbox
-        inputField.value = question;
+        inputField.value = list_questions[question-1];
+        active_index=question-1
     }
 
     // This function is for navigating to the external standardization page
